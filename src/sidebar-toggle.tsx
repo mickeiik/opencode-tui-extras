@@ -18,7 +18,7 @@ export function registerSidebarToggle(context: Context) {
           }}
         >
           <text fg={hovered() ? context.theme.text.base : context.theme.text.muted} wrapMode="none">
-            ◨
+            {"◨ "}
           </text>
         </box>
       </Show>

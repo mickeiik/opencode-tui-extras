@@ -5,7 +5,7 @@ import { rm } from "node:fs/promises"
 import { randomUUID } from "node:crypto"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
-import { MouseButton, RGBA } from "@opentui/core"
+import { MouseButton, RGBA, TextRenderable, type Renderable } from "@opentui/core"
 import { testRender } from "@opentui/solid"
 import type { Context } from "@opencode/plugin/tui/context"
 import type { JSX } from "solid-js"
@@ -49,6 +49,13 @@ async function waitFor(check: () => boolean, timeout = 1000) {
     await Bun.sleep(25)
   }
   return check()
+}
+
+function textContents(node: Renderable): string[] {
+  return [
+    ...(node instanceof TextRenderable ? [node.textNode.toChunks().map((chunk) => chunk.text).join("")] : []),
+    ...node.getChildren().flatMap(textContents),
+  ]
 }
 
 test("setup registers one claim per enabled feature and stays silent when nothing is enabled", () => {
@@ -139,7 +146,7 @@ test("sidebar toggle renders the icon and dispatches on click", async () => {
 
   try {
     await app.renderOnce()
-    expect(app.captureCharFrame()).toContain("◨")
+    expect(textContents(app.renderer.root)).toContain("◨ ")
 
     await app.mockMouse.click(1, 0)
     expect(f.dispatched).toEqual(["session.sidebar.toggle"])
