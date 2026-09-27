@@ -9,14 +9,12 @@ import { MouseButton, RGBA } from "@opentui/core"
 import { testRender } from "@opentui/solid"
 import type { Context } from "@opencode/plugin/tui/context"
 import type { JSX } from "solid-js"
-import { createSignal } from "solid-js"
 import { setup } from "../src/setup"
 
 type Claim = { prepend?: string; append?: string; render: (input: { sessionID?: string }) => JSX.Element }
 
 function fake(input?: {
   directory?: string
-  commands?: () => readonly { id?: string; title?: string }[]
   sessions?: Record<string, { parentID?: string } | undefined>
 }) {
   const color = RGBA.fromInts(200, 200, 200)
@@ -35,7 +33,6 @@ function fake(input?: {
       },
     },
     keymap: {
-      commands: input?.commands ?? (() => []),
       dispatch: (id: string) => void dispatched.push(id),
     },
     data: {
@@ -134,26 +131,15 @@ test("openWith reports a launch failure as an error toast", async () => {
   }
 })
 
-test("sidebar toggle label follows the built-in command title and dispatches on click", async () => {
-  const [commands, setCommands] = createSignal<readonly { id?: string; title?: string }[]>([
-    { id: "session.sidebar.toggle", title: "Hide sidebar" },
-  ])
-  const f = fake({ commands, sessions: { session: {} } })
+test("sidebar toggle renders the icon and dispatches on click", async () => {
+  const f = fake({ sessions: { session: {} } })
   setup(f.context, { sidebarToggle: true })
   const claim = f.claims.find((item) => item.append === "prompt.footer")!
   const app = await testRender(() => claim.render({ sessionID: "session" }), { width: 40, height: 2 })
 
   try {
     await app.renderOnce()
-    expect(app.captureCharFrame()).toContain("hide sidebar")
-
-    setCommands([{ id: "session.sidebar.toggle", title: "Show sidebar" }])
-    await app.renderOnce()
-    expect(app.captureCharFrame()).toContain("show sidebar")
-
-    setCommands([])
-    await app.renderOnce()
-    expect(app.captureCharFrame()).toContain("◨ sidebar")
+    expect(app.captureCharFrame()).toContain("◨")
 
     await app.mockMouse.click(1, 0)
     expect(f.dispatched).toEqual(["session.sidebar.toggle"])
@@ -190,9 +176,9 @@ test("sidebar toggle renders nothing without a root session", async () => {
     await unknown.renderOnce()
     await child.renderOnce()
     await none.renderOnce()
-    expect(unknown.captureCharFrame()).not.toContain("sidebar")
-    expect(child.captureCharFrame()).not.toContain("sidebar")
-    expect(none.captureCharFrame()).not.toContain("sidebar")
+    expect(unknown.captureCharFrame()).not.toContain("◨")
+    expect(child.captureCharFrame()).not.toContain("◨")
+    expect(none.captureCharFrame()).not.toContain("◨")
   } finally {
     unknown.renderer.destroy()
     child.renderer.destroy()

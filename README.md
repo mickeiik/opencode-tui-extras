@@ -3,7 +3,7 @@
 Two opt-in extras for the [OpenCode](https://opencode.ai) CLI (TUI):
 
 - **openWith** — one or more clickable rows in the session sidebar footer, above the working directory path. Clicking a row launches its command with the session's working directory as the only argument.
-- **sidebarToggle** — a clickable `◨ hide sidebar` / `◨ show sidebar` button in the prompt footer, a mouse affordance for the built-in `<leader>b` binding.
+- **sidebarToggle** — a clickable `◨` icon in the prompt footer, a mouse affordance for the built-in `<leader>b` binding (it does not show sidebar state).
 
 **Everything is off until you enable it in `cli.json`.** The plugin loads but registers nothing and shows nothing when no options are configured.
 

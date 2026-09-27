@@ -5,12 +5,6 @@ import type { Context } from "@opencode/plugin/tui/context"
 
 export function registerSidebarToggle(context: Context) {
   const [hovered, setHovered] = createSignal(false)
-  const label = () => {
-    const command = context.keymap.commands().find((item) => item.id === "session.sidebar.toggle")
-    if (command?.title === "Hide sidebar") return "◨ hide sidebar"
-    if (command?.title === "Show sidebar") return "◨ show sidebar"
-    return "◨ sidebar"
-  }
 
   return context.ui.slot({
     append: "prompt.footer",
@@ -24,7 +18,7 @@ export function registerSidebarToggle(context: Context) {
           }}
         >
           <text fg={hovered() ? context.theme.text.base : context.theme.text.muted} wrapMode="none">
-            {label()}
+            ◨
           </text>
         </box>
       </Show>
