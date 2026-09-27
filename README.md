@@ -9,24 +9,14 @@ Two opt-in extras for the [OpenCode](https://opencode.ai) CLI (TUI):
 
 ## Install
 
-Clone into OpenCode's global plugins directory (or symlink it there):
-
-```sh
-git clone https://github.com/mickeiik/opencode-tui-extras.git ~/.config/opencode/plugins/tui-extras
-```
-
-Restart OpenCode once. After that, feature toggles apply live when `cli.json` changes — no restart.
-
-## Configuration (required)
-
-Without a `cli.json` entry there are no options, so nothing renders. Add the plugin to `~/.config/opencode/cli.json`:
+Point `cli.json` at the repository — no clone needed:
 
 ```jsonc
 {
   "$schema": "https://opencode.ai/v2/cli.json",
   "plugins": [
     {
-      "package": "./plugins/tui-extras",
+      "package": "github:mickeiik/opencode-tui-extras#main",
       "options": {
         "openWith": [
           { "command": "codium", "title": "Open with VSCodium" },
@@ -38,6 +28,14 @@ Without a `cli.json` entry there are no options, so nothing renders. Add the plu
   ]
 }
 ```
+
+Restart OpenCode once. After that, feature toggles apply live when `cli.json` changes — no restart.
+
+For local development, clone or symlink the repo under the global `plugins/` directory and use `"./plugins/tui-extras"` as the package instead.
+
+## Configuration (required)
+
+Without a `cli.json` entry there are no options, so nothing renders.
 
 ## Options
 
@@ -54,8 +52,8 @@ Any editor or tool with a CLI (`code`, `zed`, `cursor`, `xdg-open`, ...) works w
 
 - `sidebarToggle` duplicates the built-in `<leader>b` keybinding; it only adds a mouse target. It is hidden for subagent sessions, where the sidebar cannot show.
 - The built-in "Working directory" menu (Copy path / Open folder / Workspaces) is not extensible through the plugin API, so `openWith` adds its own rows above the directory path instead of a menu entry.
-- Installing the package through `cli.json` as a git dependency resolves and downloads, but the host CLI cannot load JSX plugins from `node_modules`: they are compiled outside OpenTUI's Solid transform and the generated JSX runtime import does not resolve. Local plugins, as installed above, are transformed correctly.
-- To remove the plugin, delete `~/.config/opencode/plugins/tui-extras` and its `cli.json` entry.
+- Git installs work because `@opentui/core`, `@opentui/solid`, and `solid-js` are regular peer dependencies, so npm installs them next to the plugin. Marking them optional would break the load.
+- To remove the plugin, delete its `cli.json` entry.
 
 ## Development
 
